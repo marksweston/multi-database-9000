@@ -1,5 +1,5 @@
 PATH
-  remote: ../..
+  remote: ..
   specs:
     multi-database-9000 (0.0.1)
       rails (>= 4.0)
