@@ -18,6 +18,7 @@ end
 Rake::Task['db:create'].clear
 
 namespace :db do
+  desc "Creates all databases from config/database.yml, or the database specified by DATABASE for the current RAILS_ENV"
   task :create => [:load_config] do
     database_connections(:database => ENV["DATABASE"], :rails_env => ENV["RAILS_ENV"]).values.each do |database_connection|
       ActiveRecord::Tasks::DatabaseTasks.create database_connection
