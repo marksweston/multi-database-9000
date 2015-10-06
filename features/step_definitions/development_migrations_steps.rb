@@ -1,16 +1,10 @@
 Given(/^empty databases have been created for the app$/) do
   cd "../../single-db-dummy" do
-    cmd = unescape_text("rake db:create")
-    cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
-
-    run_simple(cmd, false)
+    run_rake_db_create
   end
 
   cd "../../multi-db-dummy" do
-    cmd = unescape_text("rake db:create")
-    cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
-
-    run_simple(cmd, false)
+    run_rake_db_create
   end
 end
 
@@ -28,3 +22,9 @@ def root_path
   return File.expand_path("../..", __dir__)
 end 
 
+def run_rake_db_create
+  cmd = unescape_text("rake db:create")
+  cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
+
+  run_simple(cmd, false)
+end
