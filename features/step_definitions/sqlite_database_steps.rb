@@ -8,15 +8,19 @@ end
 Given(/^I run `([^`]*)` in a single database app$/) do |command|
   cd "../../single-db-dummy"
 
-  cmd = unescape_text(command)
-  cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
-
-  run_simple(cmd, false)
+  run_rake_db_task command
 end
 
 Given(/^I run `([^`]*)` in a multi database app$/) do |command|
   cd "../../multi-db-dummy"
 
+  run_rake_db_task command
+end
+
+
+#helper
+
+def run_rake_db_task command
   cmd = unescape_text(command)
   cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
 

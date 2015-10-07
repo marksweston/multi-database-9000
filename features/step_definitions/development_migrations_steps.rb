@@ -33,17 +33,99 @@ end
 
 Then(/^I should see the created users table$/) do
   SQLite3::Database.new( "single-db-dummy/db/development.sqlite3" ) do |db|
-    db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='users'" ) do |table|
-      puts table[0]
-    end
+    users_table = db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='users'" ) 
+    expect(users_table[0][0]).to eq "users"
   end
 end
 
 Then(/^I should see the correct columns in the users table$/) do
   SQLite3::Database.new( "single-db-dummy/db/development.sqlite3" ) do |db|
-    db.execute( "PRAGMA table_info(users)" ) do |column|
-      puts column[1]
+    users_columns = db.execute( "PRAGMA table_info(users)" ) 
+    column_names = users_columns.map do |column|
+      column[1]
     end
+    expect(column_names).to include "name" 
+    expect(column_names).to include "email" 
+    expect(column_names).to include "age" 
+  end
+end
+
+When(/^I create a database migration on the default database in a multi database app$/) do
+  migration = <<-MIGRATION_END
+    class CreatePostsTable < ActiveRecord::Migration
+      def change
+        create_table :posts do |column|
+          column.string  :title
+          column.integer :text
+          column.string  :author
+        end
+      end 
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/migrate/20151010142141_" + "create_posts_table.rb",  migration
+end
+
+When(/^It creates a posts table with columns called 'title' and 'text' and 'author'$/) do
+  # This line describes what was created in the migration
+end
+
+When(/^I create another database migration on the users database in a multi database app$/) do
+  migration = <<-MIGRATION_END
+    class CreateAccountsTable < ActiveRecord::Migration
+      def change
+        create_table :accounts do |column|
+          column.string  :expense
+          column.integer :user_id
+          column.string  :total
+        end
+      end 
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/users_migrate/20151010141234_" + "create_accounts_table.rb",  migration
+end
+
+When(/^It creates an accounts table with columns called 'expense' and 'user_id' and 'total'$/) do
+  # This line shows which columns are created on the users database accounts table.
+end
+
+When(/^I create another database migration on the widgets database in a multi database app$/) do
+  migration = <<-MIGRATION_END
+    class CreateGadgetsTable < ActiveRecord::Migration
+      def change
+        create_table :gadgets do |column|
+          column.string  :doobry
+          column.integer :wotsit
+          column.string  :thingy
+        end
+      end 
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/widgets_migrate/20151010145432_" + "create_widgets_table.rb",  migration
+end
+
+When(/^It creates an gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'$/) do
+  # This line shows which columns are created on the widgets database gadgets table.
+end
+
+Then(/^I should see the created posts table in the default database$/) do
+  SQLite3::Database.new( "multi-db-dummy/db/development.sqlite3" ) do |db|
+    posts_table = db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='posts'" ) 
+    expect(posts_table[0][0]).to eq "posts"
+  end
+end
+
+Then(/^I should see the created '([^`]*)' table in the '([^`]*)' database$/) do |table, database|
+  if database == "default"
+    database_file_name = "development"
+  else
+    database_file_name = "#{database}_development"
+  end
+  SQLite3::Database.new( "multi-db-dummy/db/#{database_file_name}.sqlite3" ) do |db|
+    accounts_table = db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='#{table}'" ) 
+    expect(accounts_table[0][0]).to eq table
   end
 end
 
