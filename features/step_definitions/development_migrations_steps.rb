@@ -42,11 +42,7 @@ end
 Then(/^I should see the correct columns in the users table$/) do
   SQLite3::Database.new( "single-db-dummy/db/development.sqlite3" ) do |db|
     db.execute( "PRAGMA table_info(users)" ) do |column|
-<<<<<<< HEAD
       puts column[1]
-=======
-      puts column
->>>>>>> c7ed68aee85b55edb3e151bfa461165b5e0a8462
     end
   end
 end
