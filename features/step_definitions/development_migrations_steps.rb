@@ -1,4 +1,5 @@
 require 'sqlite3'
+require 'pry'
 
 Given(/^empty databases have been created for the app$/) do
   cd "../../single-db-dummy" do
@@ -31,7 +32,7 @@ When(/^It creates a users table with columns called 'name' and 'age' and 'email'
 end
 
 Then(/^I should see the created users table$/) do
-  SQLite3::Database.new( "../../single-db-dummy/db/development.sqlite3" ) do |db|
+  SQLite3::Database.new( "single-db-dummy/db/development.sqlite3" ) do |db|
     db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='users'" ) do |table|
       puts table
     end
@@ -42,17 +43,7 @@ Then(/^I should see the correct columns in the users table$/) do
   pending # Write code here that turns the phrase above into concrete actions
 end
 
-
-
-
-
-
-
 # Helpers
-
-def root_path
-  return File.expand_path("../..", __dir__)
-end 
 
 def run_rake_db_create
   cmd = unescape_text("rake db:create")
