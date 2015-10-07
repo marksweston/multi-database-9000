@@ -40,7 +40,11 @@ Then(/^I should see the created users table$/) do
 end
 
 Then(/^I should see the correct columns in the users table$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  SQLite3::Database.new( "single-db-dummy/db/development.sqlite3" ) do |db|
+    db.execute( "PRAGMA table_info(users)" ) do |column|
+      puts column
+    end
+  end
 end
 
 # Helpers
