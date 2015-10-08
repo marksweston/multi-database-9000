@@ -11,20 +11,9 @@ Given(/^empty databases have been created for the app$/) do
   end
 end
 
-When(/^I create a database migration in a single database app$/) do
-  migration = <<-MIGRATION_END
-    class CreateUsersTable < ActiveRecord::Migration
-      def change
-        create_table :users do |column|
-          column.string  :name
-          column.integer :age
-          column.string  :email
-        end
-      end 
-    end
-  MIGRATION_END
 
-  write_file "../../single-db-dummy/db/migrate/20151010142141_" + "create_users_table.rb",  migration
+When(/^I create a database migration in a single database app$/) do
+  write_single_db_migration
 end
 
 When(/^It creates a users table with columns called 'name' and 'age' and 'email'$/) do
@@ -144,6 +133,17 @@ Then(/^I should see the "([^"]*)", "([^"]*)" and "([^"]*)" columns in the "([^"]
   end
 end
 
+When(/^I run a migration with the timestamp "([^"]*)" in a single database app$/) do |timestamp|
+  @timestamp = timestamp
+  write_single_db_migration
+  run_task_in_single_db_app "bundle exec rake db:migrate"
+end
+
+Then(/^the version in the schema file should be updated$/) do
+  version = "version: #{@timestamp}"
+  expect(File.read "single-db-dummy/db/schema.rb").to match Regexp.new(version)
+end
+
 
 # Helpers
 
@@ -152,4 +152,21 @@ def run_rake_db_create
   cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
 
   run_simple(cmd, false)
+end
+
+
+def write_single_db_migration
+  migration = <<-MIGRATION_END
+    class CreateUsersTable < ActiveRecord::Migration
+      def change
+        create_table :users do |column|
+          column.string  :name
+          column.integer :age
+          column.string  :email
+        end
+      end
+    end
+  MIGRATION_END
+
+  write_file "../../single-db-dummy/db/migrate/20151010142141_" + "create_users_table.rb", migration
 end

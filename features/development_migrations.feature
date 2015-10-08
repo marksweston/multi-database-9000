@@ -14,6 +14,11 @@ Feature: Migrations run for all databases in the app
     Then I should see the created users table 
     And I should see the correct columns in the users table
 
+  Scenario: The schema is updated when migrations are run in a single database app
+    When I run a migration with the timestamp "2015101014214" in a single database app
+    Then the file "db/schema.rb" should exist
+    And the version in the schema file should be updated
+
   Scenario: User runs a migration in a multi database app
     When I create a database migration on the default database in a multi database app
     And It creates a posts table with columns called 'title' and 'text' and 'author'

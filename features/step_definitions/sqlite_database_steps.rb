@@ -6,9 +6,7 @@ Given(/^no databases have been created$/) do
 end
 
 Given(/^I run `([^`]*)` in a single database app$/) do |command|
-  cd "../../single-db-dummy"
-
-  run_rake_db_task command
+  run_task_in_single_db_app(command)
 end
 
 Given(/^I run `([^`]*)` in a multi database app$/) do |command|
@@ -19,6 +17,12 @@ end
 
 
 #helper
+
+def run_task_in_single_db_app(command)
+  cd "../../single-db-dummy"
+
+  run_rake_db_task command
+end
 
 def run_rake_db_task command
   cmd = unescape_text(command)

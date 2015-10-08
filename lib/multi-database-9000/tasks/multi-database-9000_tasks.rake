@@ -26,7 +26,7 @@ end
 Rake::Task['db:create'].clear
 Rake::Task['db:migrate'].clear
 
-namespace :db do
+db_namespace = namespace :db do
   desc "Creates all databases from config/database.yml, or the database specified by DATABASE for the current RAILS_ENV"
   task :create => [:load_config] do
     if ENV["RAILS_ENV"] == "development" || ENV["RAILS_ENV"].nil?
@@ -44,6 +44,28 @@ namespace :db do
     database_connections(:database => ENV["DATABASE"], :rails_envs => rails_env).keys.each do |connection_key|
       ActiveRecord::Base.establish_connection(connection_key)
       ActiveRecord::Migrator.migrate(migration_directory(connection_key) , ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
+    end
+    db_namespace['_dump'].invoke
+  end
+
+  namespace :schema do
+    desc 'Create a db/schema.rb file for each database, that is portable against any DB supported by AR'
+    task :dump => [:environment] do
+      require 'active_record/schema_dumper'
+
+      if ENV["RAILS_ENV"] == "development" || ENV["RAILS_ENV"].nil?
+        rails_envs = ["development", "test"]
+      else
+        rails_envs = ENV["RAILS_ENV"]
+      end
+      database_connections(:database => ENV["DATABASE"], :rails_envs => rails_envs).each do |connection_key, database_connection|
+        ActiveRecord::Base.establish_connection(connection_key)
+        filename = ENV['SCHEMA'] || File.join(ActiveRecord::Tasks::DatabaseTasks.db_dir, 'schema.rb')
+        File.open(filename, "w:utf-8") do |file|
+          ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+        end
+      end
+      db_namespace['schema:dump'].reenable
     end
   end
 end
