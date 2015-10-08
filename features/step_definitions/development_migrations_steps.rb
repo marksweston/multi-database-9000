@@ -92,7 +92,7 @@ end
 
 When(/^I create another database migration on the widgets database in a multi database app$/) do
   migration = <<-MIGRATION_END
-    class CreateGadgetsTable < ActiveRecord::Migration
+    class CreateWidgetsTable < ActiveRecord::Migration
       def change
         create_table :gadgets do |column|
           column.string  :doobry
@@ -117,14 +117,14 @@ Then(/^I should see the created posts table in the default database$/) do
   end
 end
 
-Then(/^I should see the created '([^`]*)' table in the '([^`]*)' database$/) do |table, database|
+Then(/^I should see the created '([^']*)' table in the '([^']*)' database$/) do |table, database|
   if database == "default"
     database_file_name = "development"
   else
     database_file_name = "#{database}_development"
   end
   SQLite3::Database.new( "multi-db-dummy/db/#{database_file_name}.sqlite3" ) do |db|
-    accounts_table = db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='#{table}'" ) 
+    accounts_table = db.execute( "SELECT name FROM sqlite_master WHERE type='table' AND name='#{table}'" )
     expect(accounts_table[0][0]).to eq table
   end
 end
