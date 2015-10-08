@@ -25,3 +25,7 @@ Feature: Migrations run for all databases in the app
     Then I should see the created 'posts' table in the 'default' database
     And I should see the created 'accounts' table in the 'users' database
     And I should see the created 'gadgets' table in the 'widgets' database
+    And I should see the "title", "text" and "author" columns in the "posts" table in the "default" database
+    And I should see the "expense", "user_id" and "total" columns in the "accounts" table in the "users" database
+    And I should see the "doobry", "wotsit" and "thingy" columns in the "gadgets" table in the "widgets" database
+

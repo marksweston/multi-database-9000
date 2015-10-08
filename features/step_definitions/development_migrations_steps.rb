@@ -129,6 +129,22 @@ Then(/^I should see the created '([^']*)' table in the '([^']*)' database$/) do 
   end
 end
 
+Then(/^I should see the "([^"]*)", "([^"]*)" and "([^"]*)" columns in the "([^"]*)" table in the "([^"]*)" database$/) do |column1, column2, column3, table, database|
+  if database == "default"
+    database_file_name = "development"
+  else
+    database_file_name = "#{database}_development"
+  end
+  SQLite3::Database.new( "multi-db-dummy/db/#{database_file_name}.sqlite3" ) do |db|
+    users_columns = db.execute( "PRAGMA table_info(#{table})" )
+    column_names = users_columns.map { |column| column[1] }
+    expect(column_names).to include column1
+    expect(column_names).to include column2
+    expect(column_names).to include column3
+  end
+end
+
+
 # Helpers
 
 def run_rake_db_create
