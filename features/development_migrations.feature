@@ -15,7 +15,7 @@ Feature: Migrations run for all databases in the app
     And I should see the correct columns in the users table
 
   Scenario: The schema is updated when migrations are run in a single database app
-    When I run a migration with the timestamp "2015101014214" in a single database app
+    When I run a migration with the timestamp "20151010142141" in a single database app
     Then the file "db/schema.rb" should exist
     And the version in the schema file should be updated
 
@@ -33,4 +33,13 @@ Feature: Migrations run for all databases in the app
     And I should see the "title", "text" and "author" columns in the "posts" table in the "default" database
     And I should see the "expense", "user_id" and "total" columns in the "accounts" table in the "users" database
     And I should see the "doobry", "wotsit" and "thingy" columns in the "gadgets" table in the "widgets" database
+
+  Scenario: The schema is uopdated when migrations are run in a multi database app
+    When I run migrations with the following timestamps "20151010142141", "20151010141234" and "20151010145432" in a multi-database app
+    Then the file "db/schema.rb" should exist
+    Then the file "db/users_schema.rb" should exist
+    Then the file "db/widgets_schema.rb" should exist
+    And the versions in the schema files should be updated
+
+
 

@@ -23,8 +23,18 @@ def migration_directory(connection_key)
   end
 end
 
+def schema_file_name(connection_key)
+  if ['test','development','staging','cucumber','production'].include? connection_key
+    return "schema.rb"
+  else
+    database_name = connection_key.split('_')[0]
+    return "#{database_name}_schema.rb"
+  end
+end
+
 Rake::Task['db:create'].clear
 Rake::Task['db:migrate'].clear
+Rake::Task['db:schema:dump'].clear
 
 db_namespace = namespace :db do
   desc "Creates all databases from config/database.yml, or the database specified by DATABASE for the current RAILS_ENV"
@@ -58,9 +68,9 @@ db_namespace = namespace :db do
       else
         rails_envs = ENV["RAILS_ENV"]
       end
-      database_connections(:database => ENV["DATABASE"], :rails_envs => rails_envs).each do |connection_key, database_connection|
+      database_connections(:database => ENV["DATABASE"], :rails_envs => rails_envs).keys.each do |connection_key|
         ActiveRecord::Base.establish_connection(connection_key)
-        filename = ENV['SCHEMA'] || File.join(ActiveRecord::Tasks::DatabaseTasks.db_dir, 'schema.rb')
+        filename = ENV['SCHEMA'] || File.join(ActiveRecord::Tasks::DatabaseTasks.db_dir, schema_file_name(connection_key))
         File.open(filename, "w:utf-8") do |file|
           ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
         end

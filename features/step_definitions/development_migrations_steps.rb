@@ -39,7 +39,7 @@ Then(/^I should see the correct columns in the users table$/) do
   end
 end
 
-When(/^I create a database migration on the default database in a multi database app$/) do
+def write_migration_for_default_db
   migration = <<-MIGRATION_END
     class CreatePostsTable < ActiveRecord::Migration
       def change
@@ -48,18 +48,22 @@ When(/^I create a database migration on the default database in a multi database
           column.integer :text
           column.string  :author
         end
-      end 
+      end
     end
   MIGRATION_END
 
-  write_file "../../multi-db-dummy/db/migrate/20151010142141_" + "create_posts_table.rb",  migration
+  write_file "../../multi-db-dummy/db/migrate/20151010142141_" + "create_posts_table.rb", migration
+end
+
+When(/^I create a database migration on the default database in a multi database app$/) do
+  write_migration_for_default_db
 end
 
 When(/^It creates a posts table with columns called 'title' and 'text' and 'author'$/) do
   # This line describes what was created in the migration
 end
 
-When(/^I create another database migration on the users database in a multi database app$/) do
+def write_migration_for_user_db
   migration = <<-MIGRATION_END
     class CreateAccountsTable < ActiveRecord::Migration
       def change
@@ -68,11 +72,15 @@ When(/^I create another database migration on the users database in a multi data
           column.integer :user_id
           column.string  :total
         end
-      end 
+      end
     end
   MIGRATION_END
 
-  write_file "../../multi-db-dummy/db/users_migrate/20151010141234_" + "create_accounts_table.rb",  migration
+  write_file "../../multi-db-dummy/db/users_migrate/20151010141234_" + "create_accounts_table.rb", migration
+end
+
+When(/^I create another database migration on the users database in a multi database app$/) do
+  write_migration_for_users_db
 end
 
 When(/^It creates an accounts table with columns called 'expense' and 'user_id' and 'total'$/) do
@@ -80,19 +88,7 @@ When(/^It creates an accounts table with columns called 'expense' and 'user_id' 
 end
 
 When(/^I create another database migration on the widgets database in a multi database app$/) do
-  migration = <<-MIGRATION_END
-    class CreateWidgetsTable < ActiveRecord::Migration
-      def change
-        create_table :gadgets do |column|
-          column.string  :doobry
-          column.integer :wotsit
-          column.string  :thingy
-        end
-      end 
-    end
-  MIGRATION_END
-
-  write_file "../../multi-db-dummy/db/widgets_migrate/20151010145432_" + "create_widgets_table.rb",  migration
+  write_migration_for_widgets_db
 end
 
 When(/^It creates an gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'$/) do
@@ -144,6 +140,25 @@ Then(/^the version in the schema file should be updated$/) do
   expect(File.read "single-db-dummy/db/schema.rb").to match Regexp.new(version)
 end
 
+When(/^I run migrations with the following timestamps "([^"]*)", "([^"]*)" and "([^"]*)" in a multi\-database app$/) do |timestamp1, timestamp2, timestamp3|
+  @timestamps = [timestamp1, timestamp2, timestamp3]
+  write_migration_for_default_db
+  write_migration_for_users_db
+  write_migration_for_widgets_db
+  run_task_in_multi_db_app "bundle exec rake db:migrate"
+end
+
+
+Then(/^the versions in the schema files should be updated$/) do
+  version = "version: #{@timestamps[0]}"
+  expect(File.read "multi-db-dummy/db/schema.rb").to match Regexp.new(version)
+  version = "version: #{@timestamps[1]}"
+  expect(File.read "multi-db-dummy/db/users_schema.rb").to match Regexp.new(version)
+  version = "version: #{@timestamps[2]}"
+  expect(File.read "multi-db-dummy/db/widgets_schema.rb").to match Regexp.new(version)
+end
+
+
 
 # Helpers
 
@@ -169,4 +184,52 @@ def write_single_db_migration
   MIGRATION_END
 
   write_file "../../single-db-dummy/db/migrate/20151010142141_" + "create_users_table.rb", migration
+end
+
+def write_migration_for_default_db
+  migration = <<-MIGRATION_END
+    class CreatePostsTable < ActiveRecord::Migration
+      def change
+        create_table :posts do |column|
+          column.string  :title
+          column.integer :text
+          column.string  :author
+        end
+      end
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/migrate/20151010142141_" + "create_posts_table.rb", migration
+end
+
+def write_migration_for_users_db
+  migration = <<-MIGRATION_END
+    class CreateAccountsTable < ActiveRecord::Migration
+      def change
+        create_table :accounts do |column|
+          column.string  :expense
+          column.integer :user_id
+          column.string  :total
+        end
+      end
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/users_migrate/20151010141234_" + "create_accounts_table.rb", migration
+end
+
+def write_migration_for_widgets_db
+  migration = <<-MIGRATION_END
+    class CreateWidgetsTable < ActiveRecord::Migration
+      def change
+        create_table :gadgets do |column|
+          column.string  :doobry
+          column.integer :wotsit
+          column.string  :thingy
+        end
+      end
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/widgets_migrate/20151010145432_" + "create_widgets_table.rb", migration
 end

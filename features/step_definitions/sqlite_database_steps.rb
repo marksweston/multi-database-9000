@@ -9,10 +9,9 @@ Given(/^I run `([^`]*)` in a single database app$/) do |command|
   run_task_in_single_db_app(command)
 end
 
-Given(/^I run `([^`]*)` in a multi database app$/) do |command|
-  cd "../../multi-db-dummy"
 
-  run_rake_db_task command
+Given(/^I run `([^`]*)` in a multi database app$/) do |command|
+  run_task_in_multi_db_app(command)
 end
 
 
@@ -20,6 +19,12 @@ end
 
 def run_task_in_single_db_app(command)
   cd "../../single-db-dummy"
+
+  run_rake_db_task command
+end
+
+def run_task_in_multi_db_app(command)
+  cd "../../multi-db-dummy"
 
   run_rake_db_task command
 end
