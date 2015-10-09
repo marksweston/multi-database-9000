@@ -9,36 +9,36 @@ Feature: Running rake db:create
 
   Scenario: creating the database in a single database app
     When I run `bundle exec rake db:create` in a single database app
-    Then the file "db/development.sqlite3" should exist
-    And the file "db/test.sqlite3" should exist
+    Then the file "../../single-db-dummy/db/development.sqlite3" should exist
+    And the file "../../single-db-dummy/db/test.sqlite3" should exist
 
   Scenario: creating the database in a multi database app
     When I run `bundle exec rake db:create` in a multi database app
     Then the following files should exist:
-      |db/development.sqlite3        |
-      |db/users_development.sqlite3  |
-      |db/widgets_development.sqlite3|
-      |db/test.sqlite3               |
-      |db/users_test.sqlite3         |
-      |db/widgets_test.sqlite3       |
+      |../../multi-db-dummy/db/development.sqlite3        |
+      |../../multi-db-dummy/db/users_development.sqlite3  |
+      |../../multi-db-dummy/db/widgets_development.sqlite3|
+      |../../multi-db-dummy/db/test.sqlite3               |
+      |../../multi-db-dummy/db/users_test.sqlite3         |
+      |../../multi-db-dummy/db/widgets_test.sqlite3       |
     And the following files should not exist:
-      |db/production.sqlite3         |
-      |db/users_production.sqlite3   |
-      |db/widgets_production.sqlite3 |
+      |../../multi-db-dummy/db/production.sqlite3         |
+      |../../multi-db-dummy/db/users_production.sqlite3   |
+      |../../multi-db-dummy/db/widgets_production.sqlite3 |
 
   Scenario: specifying the database to create using the DATABASE environment variable
     When I run `bundle exec rake db:create DATABASE=users` in a multi database app
     Then the following files should exist:
-      |db/users_development.sqlite3  |
-      |db/users_test.sqlite3         |
+      |../../multi-db-dummy/db/users_development.sqlite3  |
+      |../../multi-db-dummy/db/users_test.sqlite3         |
     And the following files should not exist:
-      |db/development.sqlite3        |
-      |db/widgets_development.sqlite3|
-      |db/test.sqlite3               |
-      |db/widgets_test.sqlite3       |
-      |db/production.sqlite3         |
-      |db/users_production.sqlite3   |
-      |db/widgets_production.sqlite3 |
+      |../../multi-db-dummy/db/development.sqlite3        |
+      |../../multi-db-dummy/db/widgets_development.sqlite3|
+      |../../multi-db-dummy/db/test.sqlite3               |
+      |../../multi-db-dummy/db/widgets_test.sqlite3       |
+      |../../multi-db-dummy/db/production.sqlite3         |
+      |../../multi-db-dummy/db/users_production.sqlite3   |
+      |../../multi-db-dummy/db/widgets_production.sqlite3 |
 
   Scenario: specifying the Rails environment
     Given I set the environment variables to:
@@ -46,16 +46,16 @@ Feature: Running rake db:create
       | RAILS_ENV          | test       |
     When I run `bundle exec rake db:create` in a multi database app
     Then the following files should exist:
-      |db/users_test.sqlite3         |
-      |db/test.sqlite3               |
-      |db/widgets_test.sqlite3       |
+      |../../multi-db-dummy/db/users_test.sqlite3         |
+      |../../multi-db-dummy/db/test.sqlite3               |
+      |../../multi-db-dummy/db/widgets_test.sqlite3       |
     And the following files should not exist:
-      |db/users_development.sqlite3  |
-      |db/development.sqlite3        |
-      |db/widgets_development.sqlite3|
-      |db/production.sqlite3         |
-      |db/users_production.sqlite3   |
-      |db/widgets_production.sqlite3 |
+      |../../multi-db-dummy/db/users_development.sqlite3  |
+      |../../multi-db-dummy/db/development.sqlite3        |
+      |../../multi-db-dummy/db/widgets_development.sqlite3|
+      |../../multi-db-dummy/db/production.sqlite3         |
+      |../../multi-db-dummy/db/users_production.sqlite3   |
+      |../../multi-db-dummy/db/widgets_production.sqlite3 |
 
   Scenario: specifying the database and the Rails environment
     Given I set the environment variables to:
@@ -63,13 +63,13 @@ Feature: Running rake db:create
       | RAILS_ENV          | production |
     When I run `bundle exec rake db:create DATABASE=widgets` in a multi database app
     Then the following files should exist:
-      |db/widgets_production.sqlite3 |
+      |../../multi-db-dummy/db/widgets_production.sqlite3 |
     And the following files should not exist:
-      |db/users_test.sqlite3         |
-      |db/test.sqlite3               |
-      |db/widgets_test.sqlite3       |
-      |db/users_development.sqlite3  |
-      |db/development.sqlite3        |
-      |db/widgets_development.sqlite3|
-      |db/production.sqlite3         |
-      |db/users_production.sqlite3   |
+      |../../multi-db-dummy/db/users_test.sqlite3         |
+      |../../multi-db-dummy/db/test.sqlite3               |
+      |../../multi-db-dummy/db/widgets_test.sqlite3       |
+      |../../multi-db-dummy/db/users_development.sqlite3  |
+      |../../multi-db-dummy/db/development.sqlite3        |
+      |../../multi-db-dummy/db/widgets_development.sqlite3|
+      |../../multi-db-dummy/db/production.sqlite3         |
+      |../../multi-db-dummy/db/users_production.sqlite3   |
