@@ -41,5 +41,8 @@ Feature: Migrations run for all databases in the app
     Then the file "db/widgets_schema.rb" should exist
     And the versions in the schema files should be updated
 
+  @todo
+  Scenario: rake db:migrate:status
+
 
 
