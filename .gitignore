@@ -7,6 +7,10 @@
 /pkg/
 /spec/reports/
 /tmp/
+/single-db-dummy/db
+/single-db-dummy/log
+/multi-db-dummy/db
+/multi-db-dummy/log
 *.bundle
 *.so
 *.o
