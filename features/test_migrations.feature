@@ -17,6 +17,8 @@ Background:
     Then I should see the created "posts" table in the "default" test database
     Then I should see the created "accounts" table in the "users" test database
     Then I should see the created "gadgets" table in the "widgets" test database
-
+    And I should see the "title", "text" and "author" columns in the "posts" table in the "default" database
+    And I should see the "expense", "user_id" and "total" columns in the "accounts" table in the "users" database
+    And I should see the "doobry", "wotsit" and "thingy" columns in the "gadgets" table in the "widgets" database
 
 
