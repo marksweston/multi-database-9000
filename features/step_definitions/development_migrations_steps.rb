@@ -105,7 +105,20 @@ Then(/^the versions in the schema files should be updated$/) do
   expect(File.read "multi-db-dummy/db/widgets_schema.rb").to match Regexp.new(version)
 end
 
+Given(/^There is a migration with the timestamp "([^"]*)" for the users database$/) do |timestamp|
+  @timestamp = [timestamp]
+  write_migration_for_users_db
+end
 
+
+Then(/^the version in the users schema file should be updated$/) do
+  version = "version: #{@timestamp[0]}"
+  expect(File.read "multi-db-dummy/db/users_schema.rb").to match Regexp.new(version)
+end
+
+And(/^there is a migration for the widgets database in a multi database app$/) do
+  write_migration_for_widgets_db
+end
 
 # Helpers
 

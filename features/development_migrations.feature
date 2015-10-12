@@ -34,13 +34,31 @@ Feature: Migrations run for all databases in the app
     And I should see the "expense", "user_id" and "total" columns in the "accounts" table in the "users" database
     And I should see the "doobry", "wotsit" and "thingy" columns in the "gadgets" table in the "widgets" database
 
-  Scenario: The schema is uopdated when migrations are run in a multi database app
+  Scenario: The schema is updated when migrations are run in a multi database app
     When I run migrations with the following timestamps "20151010142141", "20151010141234" and "20151010145432" in a multi-database app
     Then the file "../../multi-db-dummy/db/schema.rb" should exist
     Then the file "../../multi-db-dummy/db/users_schema.rb" should exist
     Then the file "../../multi-db-dummy/db/widgets_schema.rb" should exist
     And the versions in the schema files should be updated
 
+  Scenario: Specifying the database to migrate using the DATABASE environment variable
+    Given There is a migration with the timestamp "20151010141234" for the users database
+    When I run `bundle exec rake db:migrate DATABASE=users` in a multi database app
+    Then the file "../../multi-db-dummy/db/users_schema.rb" should exist
+    And the file "../../multi-db-dummy/db/widgets_schema.rb" should not exist
+    And the file "../../multi-db-dummy/db/schema.rb" should not exist
+    And the version in the users schema file should be updated
+
+  Scenario: Specifying the database and the environment variables to migrate to
+    Given I set the environment variables to:
+      | variable           | value      |
+      | RAILS_ENV          | production |
+    And there is a migration for the widgets database in a multi database app
+    When I run `bundle exec rake db:migrate DATABASE=widgets` in a multi database app
+    Then the file "../../multi-db-dummy/db/widgets_production.sqlite3" should exist
+    And the file "../../multi-db-dummy/db/production.sqlite3" should not exist
+    And the file "../../multi-db-dummy/db/users_production.sqlite3" should not exist
+    
   @todo
   Scenario: rake db:migrate:status
 
