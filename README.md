@@ -46,6 +46,10 @@ databases for connections with "widget" in their name.
 Similarly, rake db:schema:load and rake:db:schema:dump will load or dump schemas for all connections to all databases.
 rake db:schema:load DATABASE=widget will only load the schema for databases in connections with "widget" in their name.
 
+In order for test database schemas to be kept updated, add the following line to your `test_helper` or `spec_helper` files:
+
+    MultiDatabase9000.maintain_all_test_schemas!
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/multi-database-9000/fork )

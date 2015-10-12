@@ -36,6 +36,25 @@ Rake::Task['db:create'].clear
 Rake::Task['db:migrate'].clear
 Rake::Task['db:schema:dump'].clear
 
+Rake::Task["db:test:load_schema"].enhance do
+  begin
+    should_reconnect = ActiveRecord::Base.connection_pool.active_connection?
+    connections_for_environment("test").each do |connection_key, connection|
+      ActiveRecord::Tasks::DatabaseTasks.load_schema_for connection, :ruby, "db/#{schema_file_name(connection_key)}"
+    end
+  ensure
+    if should_reconnect
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[ActiveRecord::Tasks::DatabaseTasks.env])
+    end
+  end
+end
+
+Rake::Task["db:test:purge"].enhance do
+  connections_for_environment("test").values.each do |connection|
+    ActiveRecord::Tasks::DatabaseTasks.purge connection
+  end
+end
+
 db_namespace = namespace :db do
   desc "Creates all databases from config/database.yml, or the database specified by DATABASE for the current RAILS_ENV"
   task :create => [:load_config] do
