@@ -3,6 +3,14 @@ Feature: Migrations run for all databases in the app
   rake db:migrate should still work in a single database app
   rake db:migrate should migrate all the databases in a multi-database app
   rake db:migrate DATABASE=users should migrate the users database only
+  rake db:migrate:status should list all migrations for all databases, ordered by timestamp.
+  The migrations list should include an extra column listing the database each migration is for.
+
+  Status   Migration ID    Database        Migration Name
+  --------------------------------------------------
+    up     20151010141234  users           Create accounts table
+    up     20151010142141  default         Create posts table
+    up     20151010145432  widgets         Create widgets table
 
   Background:
     Given empty databases have been created for the app
@@ -25,7 +33,7 @@ Feature: Migrations run for all databases in the app
     And I create another database migration on the users database in a multi database app
     And It creates an accounts table with columns called 'expense' and 'user_id' and 'total'
     And I create another database migration on the widgets database in a multi database app
-    And It creates an gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'
+    And It creates a gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'
     And  I run `bundle exec rake db:migrate` in a multi database app
     Then I should see the created 'posts' table in the 'default' database
     And I should see the created 'accounts' table in the 'users' database
@@ -59,8 +67,28 @@ Feature: Migrations run for all databases in the app
     And the file "../../multi-db-dummy/db/production.sqlite3" should not exist
     And the file "../../multi-db-dummy/db/users_production.sqlite3" should not exist
     
-  @todo
-  Scenario: rake db:migrate:status
+  Scenario: User runs rake db:migrate:status in a single database app
+    Given I have created and run a migration with the name "20151010142141_create_users_table.rb", in a single database app
+    And I have created but not run a migration with the name "20151010151000_add_nickname_to_users.rb", in a single database app
+    When I run `bundle exec rake db:migrate:status` in a single database app
+    Then the output should match /up\s+20151010142141\s+default\s+Create users table/
+    And the output should match /down\s+20151010151000\s+default\s+Add nickname to users/
 
+  Scenario: User runs rake db:migrate:status in a multi database app
+    Given I have created and run the following migrations in a multi database app:
+            | Migration                               | database|
+            | 20151010142141_create_posts_table.rb    | default |
+            | 20151010141234_create_accounts_table.rb | users   |
+            | 20151010145432_create_widgets_table.rb  | widgets |
+    And I have created and not run the following migrations:
+            | Migration                                 | database|
+            | 20151010153000_add_address_to_accounts.rb | users   |
+            | 20151010153500_add_serial_to_gadgets.rb   | widgets |
+    When I run `bundle exec rake db:migrate:status` in a multi database app
+    Then the output should match /up\s+20151010142141\s+default\s+Create posts table/
+    Then the output should match /up\s+20151010141234\s+users\s+Create accounts table/
+    Then the output should match /up\s+20151010145432\s+widgets\s+Create widgets table/
+    Then the output should match /down\s+20151010153000\s+users\s+Add address to accounts/
+    Then the output should match /down\s+20151010153500\s+widgets\s+Add serial to gadgets/
 
 

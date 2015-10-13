@@ -50,7 +50,7 @@ When(/^I create another database migration on the widgets database in a multi da
   write_migration_for_widgets_db
 end
 
-When(/^It creates an gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'$/) do
+When(/^It creates a gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'$/) do
   # This line shows which columns are created on the widgets database gadgets table.
 end
 
@@ -105,9 +105,32 @@ Then(/^the versions in the schema files should be updated$/) do
   expect(File.read "multi-db-dummy/db/widgets_schema.rb").to match Regexp.new(version)
 end
 
+Given(/^I have created and run a migration with the name "([^"]*)", in a single database app$/) do |up_migration|
+  @up_migration = up_migration
+  write_single_db_migration
+  run_task_in_single_db_app "bundle exec rake db:migrate"
+end
 Given(/^There is a migration with the timestamp "([^"]*)" for the users database$/) do |timestamp|
   @timestamp = [timestamp]
   write_migration_for_users_db
+end
+
+Given(/^I have created but not run a migration with the name "([^"]*)", in a single database app$/) do |down_migration|
+  @down_migration = down_migration
+  write_another_single_db_migration
+end
+
+Given(/^I have created and run the following migrations in a multi database app:$/) do |table|
+  write_migration_for_default_db
+  write_migration_for_users_db
+  write_migration_for_widgets_db
+  run_task_in_multi_db_app "bundle exec rake db:migrate"
+end
+
+Given(/^I have created and not run the following migrations:$/) do |table|
+  table.hashes.each do |row|
+    write_multi_db_migration_for row["database"], row["Migration"]
+  end
 end
 
 
@@ -121,6 +144,21 @@ And(/^there is a migration for the widgets database in a multi database app$/) d
 end
 
 # Helpers
+
+def write_multi_db_migration_for(database, migration_name)
+  migration_database = database == "default" ? "migrate" : "#{database}_migrate"
+  migration_class = migration_name.match(/\d+_(\w+).rb/).captures.first.split('_').map(&:capitalize).join
+
+  migration = <<-MIGRATION_END
+    class #{migration_class} < ActiveRecord::Migration
+      def change
+        say "changed!"
+      end
+    end
+  MIGRATION_END
+
+  write_file "../../multi-db-dummy/db/#{migration_database}/#{migration_name}", migration
+end
 
 def run_rake_db_create
   cmd = unescape_text("rake db:create")
@@ -143,6 +181,18 @@ def write_single_db_migration
   MIGRATION_END
 
   write_file "../../single-db-dummy/db/migrate/20151010142141_" + "create_users_table.rb", migration
+end
+
+def write_another_single_db_migration
+  migration = <<-MIGRATION_END
+    class AddNicknameToUsers < ActiveRecord::Migration
+      def change
+        add_column :users, :nickname, :string
+      end
+    end
+  MIGRATION_END
+
+  write_file "../../single-db-dummy/db/migrate/20151010151000_" + "add_nickname_to_users.rb", migration
 end
 
 def write_migration_for_default_db

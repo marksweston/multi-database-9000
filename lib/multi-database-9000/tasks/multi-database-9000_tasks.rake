@@ -3,7 +3,7 @@ require 'pry'
 def database_connections(database: nil, rails_envs: nil)
   connections = connections_for_environment(rails_envs)
   if database.present?
-    connections.keep_if {|key, value| key.match Regexp.new(database)}
+    connections.keep_if {|key, _| key.match Regexp.new(database)}
   end
   return connections
 end
@@ -14,12 +14,19 @@ def connections_for_environment(rails_envs)
   return ActiveRecord::Base.configurations.keep_if &matcher
 end
 
+def database_name(connection_key)
+  if connection_key.match /\w+_\w+/
+    return connection_key.split('_').first
+  else
+    return "default"
+  end
+end
+
 def migration_directory(connection_key)
   if ['test','development','staging','cucumber','production'].include? connection_key
     return "db/migrate/"
   else
-    database_name = connection_key.split('_')[0]
-    return "db/#{database_name}_migrate/"
+    return "db/#{database_name(connection_key)}_migrate/"
   end
 end
 
@@ -27,14 +34,14 @@ def schema_file_name(connection_key)
   if ['test','development','staging','cucumber','production'].include? connection_key
     return "schema.rb"
   else
-    database_name = connection_key.split('_')[0]
-    return "#{database_name}_schema.rb"
+    return "#{database_name(connection_key)}_schema.rb"
   end
 end
 
 Rake::Task['db:create'].clear
 Rake::Task['db:migrate'].clear
 Rake::Task['db:schema:dump'].clear
+Rake::Task['db:migrate:status'].clear
 
 Rake::Task["db:test:load_schema"].enhance do
   begin
@@ -75,6 +82,42 @@ db_namespace = namespace :db do
       ActiveRecord::Migrator.migrate(migration_directory(connection_key) , ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
     end
     db_namespace['_dump'].invoke
+  end
+
+  namespace :migrate do
+    desc 'Display status of migrations'
+    task :status => [:environment] do
+      migrations_list = []
+
+      database_connections(:database => ENV["DATABASE"], :rails_envs => "development" || ENV["RAILS_ENV"]).keys.each do |connection_key|
+        ActiveRecord::Base.establish_connection(connection_key)
+
+        abort 'Schema migrations table does not exist yet.' unless ActiveRecord::SchemaMigration.table_exists?
+
+        db_list = ActiveRecord::SchemaMigration.normalized_versions
+
+        file_list =
+            Dir.foreach(migration_directory(connection_key)).grep(/^(\d{3,})_(.+)\.rb$/) do
+              version = ActiveRecord::SchemaMigration.normalize_migration_number($1)
+              status = db_list.delete(version) ? 'up' : 'down'
+              [status, version, database_name(connection_key), $2.humanize]
+            end
+
+        db_list.map! do |version|
+          ['up', version, database_name(connection_key), '********** NO FILE **********']
+        end
+
+        migrations_list += db_list + file_list
+      end
+
+      # output
+      puts "#{'Status'.center(8)}  #{'Migration ID'.ljust(14)}  #{'Database'.ljust(14)}  Migration Name"
+      puts "-" * 50
+      (migrations_list).sort_by { |_, version, _, _| version }.each do |status, version, database, name|
+        puts "#{status.center(8)}  #{version.ljust(14)}  #{database.ljust(14)}  #{name}"
+      end
+      puts
+    end
   end
 
   namespace :schema do
