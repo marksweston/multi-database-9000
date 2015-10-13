@@ -79,7 +79,7 @@ Feature: Migrations run for all databases in the app
             | Migration                               | database|
             | 20151010142141_create_posts_table.rb    | default |
             | 20151010141234_create_accounts_table.rb | users   |
-            | 20151010145432_create_widgets_table.rb  | widgets |
+            | 20151010145432_create_gadgets_table.rb  | widgets |
     And I have created and not run the following migrations:
             | Migration                                 | database|
             | 20151010153000_add_address_to_accounts.rb | users   |
@@ -87,7 +87,7 @@ Feature: Migrations run for all databases in the app
     When I run `bundle exec rake db:migrate:status` in a multi database app
     Then the output should match /up\s+20151010142141\s+default\s+Create posts table/
     Then the output should match /up\s+20151010141234\s+users\s+Create accounts table/
-    Then the output should match /up\s+20151010145432\s+widgets\s+Create widgets table/
+    Then the output should match /up\s+20151010145432\s+widgets\s+Create gadgets table/
     Then the output should match /down\s+20151010153000\s+users\s+Add address to accounts/
     Then the output should match /down\s+20151010153500\s+widgets\s+Add serial to gadgets/
 

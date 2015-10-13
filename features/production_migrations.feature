@@ -22,7 +22,7 @@ Feature: Migrations run for all databases in the app in the production environme
     And I create another database migration on the users database in a multi database app
     And It creates an accounts table with columns called 'expense' and 'user_id' and 'total'
     And I create another database migration on the widgets database in a multi database app
-    And It creates an gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'
+    And It creates a gadgets table with columns called 'doobry' and 'wotsit' and 'thingy'
     And  I run `bundle exec rake db:migrate` in a multi database app
     Then I should see the created "posts" table in the "default" database in the production environment
     And I should see the created "accounts" table in the "users" database in the production environment
