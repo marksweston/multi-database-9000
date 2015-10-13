@@ -179,7 +179,7 @@ end
 
 def write_migration_for_widgets_db
   migration = <<-MIGRATION_END
-    class CreateWidgetsTable < ActiveRecord::Migration
+    class CreateGadgetsTable < ActiveRecord::Migration
       def change
         create_table :gadgets do |column|
           column.string  :doobry
@@ -190,5 +190,5 @@ def write_migration_for_widgets_db
     end
   MIGRATION_END
 
-  write_file "../../multi-db-dummy/db/widgets_migrate/20151010145432_" + "create_widgets_table.rb", migration
+  write_file "../../multi-db-dummy/db/widgets_migrate/20151010145432_" + "create_gadgets_table.rb", migration
 end
