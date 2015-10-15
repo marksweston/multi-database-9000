@@ -9,7 +9,8 @@ Feature: Running rails generate commands produces migration files in the correct
   Background: 
     Given empty databases have been created for the app
 
-  Scenario: Running a rails generate migration in a single database app
-    Given I run `rails generate migration CreateFoolsTable` in a single database app
+  Scenario: Running 'rails generate migration' in a single database app
+    Given There is no db/migrate folder before a migration is generated in a single database app
+    And I run `rails generate migration CreateFoolsTable` in a single database app
     Then I should see the db/migrate folder
     And I should see a migration file in the db/migrate folder
