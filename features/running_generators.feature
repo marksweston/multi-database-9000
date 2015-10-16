@@ -12,5 +12,15 @@ Feature: Running rails generate commands produces migration files in the correct
   Scenario: Running 'rails generate migration' in a single database app
     Given There is no db/migrate folder before a migration is generated in a single database app
     And I run `rails generate migration CreateFoolsTable` in a single database app
-    Then I should see the db/migrate folder
-    And I should see a migration file in the db/migrate folder
+    Then I should see the db/migrate folder in a single database app
+    And I should see a migration file in the db/migrate folder in a single database app
+
+  Scenario: Running 'rails generate migration' in a multi database app
+    Given There are no migration folders before a migration is generated in a multi database app
+    And I run `rails generate migration CreateFoolsTable database=default` in a multi database app
+    Then I should see the db/migrate folder for the default database
+    And I should see a migration file in the db/migrate folder in a multi database app
+    And I run `rails generate migration CreateFoolsTable database=users` in a multi database app
+    Then I should see the db/users_migrate folder for the default database
+    And I should see a migration file in the db/users_migrate folder
+
