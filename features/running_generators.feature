@@ -22,5 +22,7 @@ Feature: Running rails generate commands produces migration files in the correct
     And I should see a migration file in the db/migrate folder in a multi database app
     And I run `rails generate multi_migration CreateFoolsTable users` in a multi database app
     Then I should see the db/users_migrate folder for the default database
-    And I should see a migration file in the db/users_migrate folder
-
+    And I should see a migration file in the db/users_migrate folder in a multi database app
+    And I run `rails generate multi_migration CreateFoolsTable widgets` in a multi database app
+    Then I should see the db/widgets_migrate folder for the default database
+    And I should see a migration file in the db/widgets_migrate folder in a multi database app

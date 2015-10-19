@@ -33,6 +33,16 @@ Then(/^I should see the db\/users_migrate folder for the default database$/) do
    expect('../../multi-db-dummy/db/users_migrate').to be_an_existing_directory
 end
 
-Then(/^I should see a migration file in the db\/users_migrate folder$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^I should see a migration file in the db\/users_migrate folder in a multi database app$/) do
+  expect('../../multi-db-dummy/db/users_migrate').not_to be_empty
+  expect(Dir.entries("multi-db-dummy/db/users_migrate").last).to include "_create_fools_table.rb"
+end
+
+Then(/^I should see the db\/widgets_migrate folder for the default database$/) do
+  expect('../../multi-db-dummy/db/widgets_migrate').to be_an_existing_directory
+end
+
+Then(/^I should see a migration file in the db\/widgets_migrate folder in a multi database app$/) do
+  expect('../../multi-db-dummy/db/widgets_migrate').not_to be_empty
+  expect(Dir.entries("multi-db-dummy/db/widgets_migrate").last).to include "_create_fools_table.rb"
 end
