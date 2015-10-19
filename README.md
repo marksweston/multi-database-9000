@@ -43,7 +43,7 @@ off if the target of the migration is your default database; alternatively multi
 rake db:create will attempt to create all databases for all connections.  rake db:create DATABASE=widgets will only created
 databases for connections with "widget" in their name.
 
-Similarly, rake db:schema:load and rake:db:schema:dump will load or dump schemas for all connections to all databases.
+Similarly, rake db:schema:load and rake db:schema:dump will load or dump schemas for all connections to all databases.
 rake db:schema:load DATABASE=widget will only load the schema for databases in connections with "widget" in their name.
 
 In order for test database schemas to be kept updated, add the following line to your `test_helper` or `spec_helper` files:
