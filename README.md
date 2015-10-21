@@ -32,12 +32,12 @@ and production connections defined in database.yml. Also that there are one or m
 
 ## Usage
 
-Create a new set of connections for your database in database.yml, in the form of "<database_name>_test",
+Create a new set of connections for your database in database.yml, in the form of "*database_name*_test",
 "<database_name>_production" etc.
 
 Create a new directory under db/ called <database_name>_migrate to hold migrations for the database.
 
-Create a new migration with rails g migration DATABASE=<database_name>. The DATABASE environment variable can be left
+Create a new migration with rails g migration <database_name>. The DATABASE environment variable can be left
 off if the target of the migration is your default database; alternatively multi-database-9000 also accepts DATABASE=default
 
 rake db:create will attempt to create all databases for all connections.  rake db:create DATABASE=widgets will only created
