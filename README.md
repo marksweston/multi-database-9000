@@ -44,11 +44,11 @@ Create a new migration with "rails generate multi_migration *migration* *databas
 If you wish to use multi-database-9000 in a single database app, the command 'rails generate migration CreateWidgetsTable' will still work.
 
 ### Rake Tasks
-rake db:create will attempt to create all databases for all connections.  rake db:create DATABASE=widgets will only created
-databases for connections with "widget" in their name.
+"rake db:create" will attempt to create all databases for all connections.  
+"rake db:create DATABASE=widgets" will only create databases for connections with "widget" in their name.
 
-Similarly, rake db:schema:load and rake db:schema:dump will load or dump schemas for all connections to all databases.
-rake db:schema:load DATABASE=widget will only load the schema for databases in connections with "widget" in their name.
+Similarly, "rake db:schema:load" and "rake db:schema:dump" will load or dump schemas for all connections to all databases.
+"rake db:schema:load DATABASE=widget" will only load the schema for databases in connections with "widget" in their name.
 
 ### Database Schema
 In order for test database schemas to be kept updated, add the following line to your `test_helper` or `spec_helper` files:
