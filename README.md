@@ -32,20 +32,25 @@ and production connections defined in database.yml. Also that there are one or m
 
 ## Usage
 
+### Database Connections
 Create a new set of connections for your database in database.yml, in the form of "*database_name*_test",
-"<database_name>_production" etc.
+"*database_name*_production" etc.
 
-Create a new directory under db/ called <database_name>_migrate to hold migrations for the database.
+Create a new directory under db/ called *database_name*_migrate to hold migrations for the database.
 
-Create a new migration with rails g migration <database_name>. The DATABASE environment variable can be left
-off if the target of the migration is your default database; alternatively multi-database-9000 also accepts DATABASE=default
+### The Multi Migration command
+Create a new migration with "rails generate multi_migration *migration* *database_name*". The *database_name* is 'default' for your default or original database, otherwise it is the name of the database you wish to migrate to e.g. "rails generate multi_migration AddTitleToWidgets widgets".
 
+If you wish to use multi-database-9000 in a single database app, the command 'rails generate migration CreateWidgetsTable' will still work.
+
+### Rake Tasks
 rake db:create will attempt to create all databases for all connections.  rake db:create DATABASE=widgets will only created
 databases for connections with "widget" in their name.
 
 Similarly, rake db:schema:load and rake db:schema:dump will load or dump schemas for all connections to all databases.
 rake db:schema:load DATABASE=widget will only load the schema for databases in connections with "widget" in their name.
 
+### Database Schema
 In order for test database schemas to be kept updated, add the following line to your `test_helper` or `spec_helper` files:
 
     MultiDatabase9000.maintain_all_test_schemas!
