@@ -7,4 +7,5 @@ module MultiDatabase9000
       load "multi-database-9000/tasks/multi-database-9000_tasks.rake"
     end
   end
+
 end
