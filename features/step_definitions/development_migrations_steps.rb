@@ -1,5 +1,4 @@
 require 'sqlite3'
-require 'pry'
 
 Given(/^empty databases have been created for the app$/) do
   clear_db_dir

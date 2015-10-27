@@ -1,5 +1,4 @@
 require 'sqlite3'
-require 'pry'
 
 Then(/^I should see the created users table in the production environment$/) do
   table_exists? :app => "single-db-dummy", :database => "production.sqlite3", :table => "users"

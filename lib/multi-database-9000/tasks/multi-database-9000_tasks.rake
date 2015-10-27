@@ -1,4 +1,3 @@
-require 'pry'
 
 def database_connections(database: nil, rails_envs: nil)
   connections = connections_for_environment(rails_envs)

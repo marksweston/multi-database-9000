@@ -1,4 +1,3 @@
- require 'pry'
 class MultiMigrationGenerator < Rails::Generators::NamedBase
   include Rails::Generators::Migration
   
