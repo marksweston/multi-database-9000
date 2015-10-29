@@ -1,7 +1,6 @@
 class MultiMigrationGenerator < Rails::Generators::NamedBase
   include Rails::Generators::Migration
-  
-  argument :database_name, :type => :string, :required => true, :banner => 'DBNAME'
+  argument :database_name, :type => :string, :required => false, :banner => 'DBNAME'
   argument :attributes, :type => :array, :default => [], :banner => "field:type field:type"
   
   hook_for :orm, :required => true
@@ -13,7 +12,7 @@ class MultiMigrationGenerator < Rails::Generators::NamedBase
     if ActiveRecord::Base.timestamped_migrations
       [Time.now.utc.strftime("%Y%m%d%H%M%S"), "%.14d" % next_migration_number].max
     else
-      "%.3d" % next_migration_number
+      SchemaMigration.normalize_migration_number(next_migration_number)
     end
   end
 
@@ -23,11 +22,16 @@ class MultiMigrationGenerator < Rails::Generators::NamedBase
   end
 
   def migration_directory
-    if database_name == "default"
+    if (database_name == "default") || database_is_nil?
       "db/migrate/#{file_name}.rb"
     else
       "db/#{database_name.downcase}_migrate/#{file_name}.rb"
     end
+  end
+
+  def database_is_nil?
+    db_name = database_name
+    return true if db_name.nil?
   end
   
   protected
@@ -40,4 +44,5 @@ class MultiMigrationGenerator < Rails::Generators::NamedBase
       end
     end
 end
+
 
