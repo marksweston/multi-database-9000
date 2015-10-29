@@ -1,9 +1,9 @@
+
 class MultiMigrationGenerator < Rails::Generators::NamedBase
   include Rails::Generators::Migration
   argument :database_name, :type => :string, :required => false, :banner => 'DBNAME'
   argument :attributes, :type => :array, :default => [], :banner => "field:type field:type"
   
-  hook_for :orm, :required => true
   
   source_root File.expand_path('../templates', __FILE__)
   
@@ -35,14 +35,15 @@ class MultiMigrationGenerator < Rails::Generators::NamedBase
   end
   
   protected
-    attr_reader :migration_action
 
-    def set_local_assigns!
-      if file_name =~ /^(add|remove)_.*_(?:to|from)_(.*)/
-        @migration_action = $1
-        @table_name       = $2.pluralize
-      end
+  attr_reader :migration_action
+
+  def set_local_assigns!
+    if file_name =~ /^(add|remove)_.*_(?:to|from)_(.*)/
+      @migration_action = $1
+      @table_name       = $2.pluralize
     end
+  end
 end
 
 
