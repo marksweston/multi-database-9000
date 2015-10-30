@@ -39,7 +39,7 @@ Create a new set of connections for your database in database.yml, in the form o
 Create a new directory under db/ called *database_name*_migrate to hold migrations for the database.
 
 ### The Multi Migration command
-Create a new migration with "rails generate multi_migration *migration* *database_name*". The *database_name* is 'default' for your default or original database, otherwise it is the name of the database you wish to migrate to e.g. "rails generate multi_migration AddTitleToWidgets widgets".
+Create a new migration with "rails generate multi_migration *migration* *database_name*". The *database_name* is 'default' for your default or original database (this can also be left off for the default database only and the migration will still work), otherwise it is the name of the database you wish to migrate to e.g. "rails generate multi_migration AddTitleToWidgets widgets".
 
 If you wish to use multi-database-9000 in a single database app, the command 'rails generate migration CreateWidgetsTable' will still work.
 
