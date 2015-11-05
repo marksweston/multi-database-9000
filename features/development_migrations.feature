@@ -65,7 +65,7 @@ Feature: Migrations run for all databases in the app
     When I run `bundle exec rake db:migrate DATABASE=widgets` in a multi database app
     Then I should see the created 'gadgets' table in the 'widgets' 'production' database
     And I should see the "doobry", "wotsit" and "thingy" columns in the "gadgets" table in the "widgets" "production" database
-    
+
   Scenario: User runs rake db:migrate:status in a single database app
     Given I have created and run a migration with the name "20151010142141_create_users_table.rb", in a single database app
     And I have created but not run a migration with the name "20151010151000_add_nickname_to_users.rb", in a single database app
