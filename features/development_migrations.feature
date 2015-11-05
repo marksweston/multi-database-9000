@@ -57,15 +57,14 @@ Feature: Migrations run for all databases in the app
     And the file "../../multi-db-dummy/db/schema.rb" should not exist
     And the version in the users schema file should be updated
 
-  Scenario: Specifying the database and the environment variables to migrate to
+  Scenario: Specifying the database and the Rails environment to migrate to
     Given I set the environment variables to:
       | variable           | value      |
       | RAILS_ENV          | production |
     And there is a migration for the widgets database in a multi database app
     When I run `bundle exec rake db:migrate DATABASE=widgets` in a multi database app
-    Then the file "../../multi-db-dummy/db/widgets_production.sqlite3" should exist
-    And the file "../../multi-db-dummy/db/production.sqlite3" should not exist
-    And the file "../../multi-db-dummy/db/users_production.sqlite3" should not exist
+    Then I should see the created 'gadgets' table in the 'widgets' 'production' database
+    And I should see the "doobry", "wotsit" and "thingy" columns in the "gadgets" table in the "widgets" "production" database
     
   Scenario: User runs rake db:migrate:status in a single database app
     Given I have created and run a migration with the name "20151010142141_create_users_table.rb", in a single database app
