@@ -3,12 +3,12 @@ Given(/^no databases have been created$/) do
   clear_db_dir
 end
 
-Given(/^I run `([^`]*)` in a single database app$/) do |command|
+Given(/^I run `([^`]*)` in (?:a|the) single database app$/) do |command|
   run_task_in_single_db_app(command)
 end
 
 
-Given(/^I run `([^`]*)` in a multi database app$/) do |command|
+Given(/^I run `([^`]*)` in (?:a|the) multi database app$/) do |command|
   run_task_in_multi_db_app(command)
 end
 

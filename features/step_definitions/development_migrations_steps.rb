@@ -57,22 +57,16 @@ Then(/^I should see the created posts table in the default database$/) do
   table_exists? :database => "development.sqlite3", :table => "posts"
 end
 
-Then(/^I should see the created '([^']*)' table in the '([^']*)' database$/) do |table, database|
-  if database == "default"
-    database_file_name = "development"
-  else
-    database_file_name = "#{database}_development"
-  end
-  table_exists? :app => "multi-db-dummy", :database => "#{database_file_name}.sqlite3", :table => table
+# the (?:'([^']*)' )? capture group specifies an optional group
+# e.g. "I should see the created users table in the default database" will match
+# e.g. "I should see the created users table in the default production database" will also match
+# (and "production" will be captured in the third parameter)
+Then(/^I should see the created '([^']*)' table in the '([^']*)' (?:'([^']*)' )?database$/) do |table, database, environment|
+  table_exists? :app => "multi-db-dummy", :database => "#{database_file_name database, environment}.sqlite3", :table => table
 end
 
-Then(/^I should see the "([^"]*)", "([^"]*)" and "([^"]*)" columns in the "([^"]*)" table in the "([^"]*)" database$/) do |column1, column2, column3, table, database|
-  if database == "default"
-    database_file_name = "development"
-  else
-    database_file_name = "#{database}_development"
-  end
-  columns_exist? :app => "multi-db-dummy", :database => "#{database_file_name}.sqlite3", :table => table, :columns => [column1, column2, column3]
+Then(/^I should see the "([^"]*)", "([^"]*)" and "([^"]*)" columns in the "([^"]*)" table in the "([^"]*)" (?:"([^"]*)" )?database$/) do |column1, column2, column3, table, database, environment|
+  columns_exist? :app => "multi-db-dummy", :database => "#{database_file_name database, environment}.sqlite3", :table => table, :columns => [column1, column2, column3]
 end
 
 When(/^I run a migration with the timestamp "([^"]*)" in a single database app$/) do |timestamp|
@@ -144,6 +138,15 @@ end
 
 # Helpers
 
+def database_file_name(database, environment)
+  env = environment || "development"
+  if database == "default"
+    return env
+  else
+    return "#{database}_#{env}"
+  end
+end
+
 def write_multi_db_migration_for(database, migration_name)
   migration_database = database == "default" ? "migrate" : "#{database}_migrate"
   migration_class = migration_name.match(/\d+_(\w+).rb/).captures.first.split('_').map(&:capitalize).join
@@ -160,10 +163,12 @@ def write_multi_db_migration_for(database, migration_name)
 end
 
 def run_rake_db_create
-  cmd = unescape_text("rake db:create")
-  cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
+  ["rake db:create", "rake db:create RAILS_ENV=production"].each do |command|
+    cmd = unescape_text(command)
+    cmd = extract_text(cmd) if !aruba.config.keep_ansi || aruba.config.remove_ansi_escape_sequences
 
-  run_simple(cmd, false)
+    run_simple(cmd, false)
+  end
 end
 
 def write_single_db_migration

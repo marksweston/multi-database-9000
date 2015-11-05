@@ -40,6 +40,7 @@ end
 Rake::Task['db:create'].clear
 Rake::Task['db:migrate'].clear
 Rake::Task['db:schema:dump'].clear
+Rake::Task['db:schema:load'].clear
 Rake::Task['db:migrate:status'].clear
 
 Rake::Task["db:test:load_schema"].enhance do
@@ -137,6 +138,13 @@ db_namespace = namespace :db do
         end
       end
       db_namespace['schema:dump'].reenable
+    end
+
+    desc 'Load a schema.rb file into the database'
+    task :load => [:environment, :load_config] do
+      database_connections(:database => ENV["DATABASE"], :rails_envs => ENV["RAILS_ENV"] || "development").each do |connection_key, connection|
+        ActiveRecord::Tasks::DatabaseTasks.load_schema_for connection, :ruby, "db/#{schema_file_name(connection_key)}"
+      end
     end
   end
 end
