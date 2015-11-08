@@ -12,7 +12,7 @@ module MultiDatabase9000
 
   def self.migration_path_for(database)
     return nil unless database.present?
-    return ["db/#{database}_schema.rb"]
+    return ["db/#{database}_migrate"]
   end
 
   def database_connections(database: nil, rails_envs: nil)

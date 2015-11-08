@@ -110,7 +110,6 @@ Feature: rake schema tasks should work for all databases in the app
     And I should see the "title", "text" and "author" columns in the "posts" table in the "default" "production" database
     And I should see the "expense", "user_id" and "total" columns in the "accounts" table in the "users" "production" database
 
-  @announce
   Scenario: checking the schema_migrations table after running rake db:schema:load
     Given a multi database app and a schema file with:
       """
