@@ -1,8 +1,6 @@
 module MultiDatabase9000
   module ActiveRecordExtensions
     module Schema
-      extend ActiveSupport::Concern
-
       def define(info, &block) # :nodoc:
         instance_eval(&block)
 
