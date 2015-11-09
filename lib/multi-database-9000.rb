@@ -1,6 +1,6 @@
 require "multi-database-9000/version"
 require "multi-database-9000/multi-database-9000"
-require_relative "active_record/schema"
+require "active_record_extensions/schema"
 
 module MultiDatabase9000
   class Railtie < Rails::Railtie
@@ -9,3 +9,5 @@ module MultiDatabase9000
     end
   end
 end
+
+ActiveRecord::Schema.prepend MultiDatabase9000::ActiveRecordExtensions::Schema
