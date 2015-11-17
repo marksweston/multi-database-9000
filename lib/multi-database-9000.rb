@@ -10,4 +10,4 @@ module MultiDatabase9000
   end
 end
 
-ActiveRecord::Schema.prepend MultiDatabase9000::ActiveRecordExtensions::Schema
+ActiveRecord::Schema.prepend(MultiDatabase9000::ActiveRecordExtensions::Schema) if defined? ActiveRecord
