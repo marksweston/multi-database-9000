@@ -10,7 +10,6 @@ end
 def connections_for_environment(*rails_envs, include_default_env: true)
   rails_envs = Array(rails_envs)
   matcher = ->(key, _){rails_envs.any?{|env| key.match(Regexp.new(env)) && (include_default_env || env != key)}}
-  puts ActiveRecord::Base.configurations.keep_if(&matcher)
   return ActiveRecord::Base.configurations.keep_if &matcher
 end
 
