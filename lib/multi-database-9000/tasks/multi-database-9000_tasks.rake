@@ -7,9 +7,10 @@ def database_connections(database: nil, rails_envs: nil)
   return connections
 end
 
-def connections_for_environment(rails_envs)
+def connections_for_environment(*rails_envs, include_default_env: true)
   rails_envs = Array(rails_envs)
-  matcher = ->(key, value){rails_envs.any?{|env| key.match Regexp.new(env)}}
+  matcher = ->(key, _){rails_envs.any?{|env| key.match(Regexp.new(env)) && (include_default_env || env != key)}}
+  puts ActiveRecord::Base.configurations.keep_if(&matcher)
   return ActiveRecord::Base.configurations.keep_if &matcher
 end
 
@@ -46,7 +47,7 @@ Rake::Task['db:migrate:status'].clear
 Rake::Task["db:test:load_schema"].enhance do
   begin
     should_reconnect = ActiveRecord::Base.connection_pool.active_connection?
-    connections_for_environment("test").each do |connection_key, connection|
+    connections_for_environment("test", include_default_env: false).each do |connection_key, connection|
       ActiveRecord::Tasks::DatabaseTasks.load_schema_for connection, :ruby, "db/#{schema_file_name(connection_key)}"
     end
   ensure
