@@ -58,7 +58,7 @@ Rake::Task["db:test:load_schema"].enhance do
 end
 
 Rake::Task["db:test:purge"].enhance do
-  connections_for_environment("test").values.each do |connection|
+  connections_for_environment("test", include_default_env: false).values.each do |connection|
     ActiveRecord::Tasks::DatabaseTasks.purge connection
   end
 end
