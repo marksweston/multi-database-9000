@@ -1,4 +1,3 @@
-
 def database_connections(database: nil, rails_envs: nil)
   connections = connections_for_environment(rails_envs)
   if database.present?
@@ -7,7 +6,7 @@ def database_connections(database: nil, rails_envs: nil)
   return connections
 end
 
-def connections_for_environment(*rails_envs, include_default_env: true)
+def connections_for_environment(rails_envs, include_default_env: true)
   rails_envs = Array(rails_envs)
   matcher = ->(key, _){rails_envs.any?{|env| key.match(Regexp.new(env)) && (include_default_env || env != key)}}
   return ActiveRecord::Base.configurations.keep_if &matcher
@@ -57,7 +56,7 @@ Rake::Task["db:test:load_schema"].enhance do
 end
 
 Rake::Task["db:test:purge"].enhance do
-  connections_for_environment("test", include_default_env: false).values.each do |connection|
+  connections_for_environment("test").values.each do |connection|
     ActiveRecord::Tasks::DatabaseTasks.purge connection
   end
 end
