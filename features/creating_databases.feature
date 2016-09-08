@@ -3,6 +3,7 @@ Feature: Running rake db:create
   rake db:create should create all the databases in a multi-database app
   rake db:create should still work in a single database app
   rake db:create DATABASE=users should create the users database only
+  rake db:create RAILS_ENV=production should create the production databases only
 
   Background:
     Given no databases have been created

@@ -37,6 +37,7 @@ def schema_file_name(connection_key)
 end
 
 Rake::Task['db:create'].clear
+Rake::Task['db:drop'].clear
 Rake::Task['db:migrate'].clear
 Rake::Task['db:schema:dump'].clear
 Rake::Task['db:schema:load'].clear
@@ -71,6 +72,18 @@ db_namespace = namespace :db do
     end
     database_connections(:database => ENV["DATABASE"], :rails_envs => rails_envs).values.each do |database_connection|
       ActiveRecord::Tasks::DatabaseTasks.create database_connection
+    end
+  end
+
+  desc "Drops all databases from config/database.yml, or the database specified by DATABASE for the current RAILS_ENV"
+  task :drop => [:load_config] do
+    if ENV["RAILS_ENV"] == "development" || ENV["RAILS_ENV"].nil?
+      rails_envs = ["development", "test"]
+    else
+      rails_envs = ENV["RAILS_ENV"]
+    end
+    database_connections(:database => ENV["DATABASE"], :rails_envs => rails_envs).values.each do |database_connection|
+      ActiveRecord::Tasks::DatabaseTasks.drop database_connection
     end
   end
 
